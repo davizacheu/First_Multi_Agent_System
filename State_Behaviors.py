@@ -1,7 +1,10 @@
-behavior_time_step = 1.0 
+behavior_time_step = 1.0
 
 def rest(agent):
-    print('Agent is resting')
+    # Action: nothing
+    agent.elapsed_time_in_state += behavior_time_step
+    # After performing action the agent verifies for possible state transition
+    
     pass
     
 
