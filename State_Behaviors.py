@@ -1,9 +1,11 @@
 import numpy as np
+import math
 from World import World
 from Agent import Agent
 from typing import List
 world = World()
 
+AGENT_VELOCITY = 0.5
 behavior_time_step = 1.0
 oscilation_time_increment = 0.1
 
@@ -42,9 +44,24 @@ def rest(agent: Agent):
 def explore(agent: Agent):
     # Actions:
     # Step 1) If no memory for the agent's velocity exist then initialize stationary velocity memory
+    if agent.behavioral_memory.get("velocity_x") == None:
+        agent.behavioral_memory["velocity_x"] == 0
+    if agent.behavioral_memory.get("velocity_y") == None:
+        agent.behavioral_memory["velocity_y"] == 0
 
     # Step 2) After establishing a memory for the agents velocity, now we take into account
     # neighbors around him to calculate a linear velocity
+    neighbors : List[Agent]  = list(filter(lambda other_agent: other_agent != agent 
+    and (other_agent.x_location - agent.x_location)**2 + (other_agent.y_location - agent.y_coordinate)**2 < 2.0**2))
+
+    for other_agent in neighbors:
+        agent.behavioral_memory["velocity_x"] += other_agent.behavioral_memory["velocity_x"]
+        agent.behavioral_memory["velocity_y"] += other_agent.behavioral_memory["velocity_y"]
+    
+    linear_angle =\
+        np.arctan2(agent.behavioral_memory["velocity_y"]/agent.behavioral_memory["velocity_x"])
+
+    
 
     # Step 3) Once the resulting linar velocity vector has been found, we then create a new memory
     # to keep track of the oscilation in its motion and produce a final velocity (non-linear) 
