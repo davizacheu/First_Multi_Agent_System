@@ -15,8 +15,8 @@ eta          = 0.6      # random fluctuation in angle (in radians)
 L            = 20        # size of world
 R            = 0.5      # interaction radius
 dt           = 0.1      # time step
-Nt           = 500      # number of time steps
-N            = 30      # number of agents
+Nt           = 200      # number of time steps
+N            = 5      # number of agents
 MAX_QUALITY  = 250
 N_SITES      = 5        # number of sites
 S_RADIUS     = 0.2      # site radius
@@ -41,15 +41,14 @@ def main():
     hub = Site(S_RADIUS + np.random.rand()*(L - S_RADIUS), S_RADIUS + np.random.rand()*(L - S_RADIUS))#
     # Adding hub to the animation
     hub_dot = plt.Circle((hub.x_coordinate, hub.y_coordinate), S_RADIUS, color ='green',  alpha=0.5)
-    ax.add_artist(hub_dot)
     # Adding hub to the World object
     world.hub = hub
 
     # Foreign Sites will be represented as tuples of the following format
     sites = [Foreign_Site(S_RADIUS + np.random.rand()*(L - S_RADIUS), S_RADIUS + np.random.rand()*(L - S_RADIUS), np.random.rand()*MAX_QUALITY ) for _ in range(N_SITES)]
-    for site in sites:
-        site_dot = plt.Circle((site.x_coordinate, site.y_coordinate), S_RADIUS, color ='blue',  alpha=0.5)
-        ax.add_artist(site_dot)
+    
+        
+       
     # Adding other sites to the World instance
     world.sites = sites
 
@@ -58,16 +57,27 @@ def main():
     # Adding agents to the World object
     world.agents = agents
     
-    # Render elements in figure 
-    for agent in agents:
-        plt.scatter(agent.x_coordinate,agent.y_coordinate, color=agent.color)
-    pass
+    
+    
     
     # Simulation main loop
     for i in range(Nt):
         # First have each agent perform an action according to their state
         for agent in agents:
             agent.perform_action()
+        
+        plt.cla()
+        	
+        ax.add_artist(hub_dot)
+        for site in sites:
+            site_dot = plt.Circle((site.x_coordinate, site.y_coordinate), S_RADIUS, color ='blue',  alpha=0.5)
+            ax.add_artist(site_dot)
+
+        for agent in world.agents:
+            plt.scatter(agent.x_coordinate, agent.y_coordinate, color = agent.color)
+        ax.set(xlim=(-1, L+1), ylim=(-1, L+1))
+        ax.set_aspect('equal')
+        plt.pause(1)
 
 if __name__ == '__main__':
     main()
