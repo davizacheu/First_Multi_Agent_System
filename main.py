@@ -1,6 +1,5 @@
 from typing import List
 import matplotlib
-matplotlib.use('TkAgg')  # or 'TkAgg' if you prefer an interactive window
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,7 +15,7 @@ L            = 20        # size of world
 R            = 0.5      # interaction radius
 dt           = 0.1      # time step
 Nt           = 200      # number of time steps
-N            = 5      # number of agents
+N            = 20  # number of agents
 MAX_QUALITY  = 250
 N_SITES      = 5        # number of sites
 S_RADIUS     = 0.2      # site radius
@@ -47,8 +46,6 @@ def main():
     # Foreign Sites will be represented as tuples of the following format
     sites = [Foreign_Site(S_RADIUS + np.random.rand()*(L - S_RADIUS), S_RADIUS + np.random.rand()*(L - S_RADIUS), np.random.rand()*MAX_QUALITY ) for _ in range(N_SITES)]
     
-        
-       
     # Adding other sites to the World instance
     world.sites = sites
 
@@ -57,11 +54,8 @@ def main():
     # Adding agents to the World object
     world.agents = agents
     
-    
-    
-    
     # Simulation main loop
-    for i in range(Nt):
+    while True:
         # First have each agent perform an action according to their state
         for agent in agents:
             agent.perform_action()
@@ -75,9 +69,10 @@ def main():
 
         for agent in world.agents:
             plt.scatter(agent.x_coordinate, agent.y_coordinate, color = agent.color)
-        ax.set(xlim=(-1, L+1), ylim=(-1, L+1))
+
+        ax.set(xlim=(0, L), ylim=(0, L))
         ax.set_aspect('equal')
-        plt.pause(1)
+        plt.pause(0.0001)
 
 if __name__ == '__main__':
     main()

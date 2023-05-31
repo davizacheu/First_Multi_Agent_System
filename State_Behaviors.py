@@ -1,14 +1,14 @@
 import numpy as np
-import math
 from World import World
 from Agent import Agent
 from Site import Foreign_Site
 from typing import List
 world = World()
 
-AGENT_VELOCITY = 10**(-1)
-behavior_time_step = 10**(-1)
-oscilation_time_increment = 0.001
+AGENT_VELOCITY = 0.3
+REPULSION_FACTOR = 0.01
+behavior_time_step = 0.1
+oscilation_time_increment = 0.04
 
 def rest(agent: Agent):
     # Action: nothing
@@ -50,39 +50,41 @@ def explore(agent: Agent):
     if agent.behavioral_memory.get("velocity_y") == None:
         agent.behavioral_memory["velocity_y"] = 0
     
-    agent.x_coordinate += agent.behavioral_memory["velocity_x"]*behavior_time_step 
-    agent.y_coordinate += agent.behavioral_memory["velocity_y"]*behavior_time_step 
-
     agent.x_coordinate %= 20
     agent.y_coordinate %= 20
+
     # Step 2) After establishing a memory for the agents velocity, now we take into account
     # neighbors around him to calculate a linear velocity
     neighbors : List[Agent]  = list(filter(lambda other_agent: other_agent != agent 
-    and (other_agent.x_coordinate - agent.x_coordinate)**2 + (other_agent.y_coordinate - agent.y_coordinate)**2 < 2.0**2, world.agents))
+    and (other_agent.x_coordinate - agent.x_coordinate)**2 + (other_agent.y_coordinate - agent.y_coordinate)**2 < 0.5**2, world.agents))
 
     for other_agent in neighbors:
         if other_agent.behavioral_memory.get("velocity_x") != None:
-            agent.behavioral_memory["velocity_x"] -= other_agent.behavioral_memory["velocity_x"]
-            agent.behavioral_memory["velocity_y"] -= other_agent.behavioral_memory["velocity_y"]
+            agent.behavioral_memory["velocity_x"] -= 1/(other_agent.x_coordinate - agent.x_coordinate)*REPULSION_FACTOR
+            agent.behavioral_memory["velocity_y"] -= 1/(other_agent.y_coordinate - agent.y_coordinate)*REPULSION_FACTOR
     
     if agent.behavioral_memory["velocity_x"] != 0:
         linear_angle =\
         np.arctan2(agent.behavioral_memory["velocity_y"],agent.behavioral_memory["velocity_x"])
     else:
-        linear_angle = 0
+        linear_angle = np.random.rand()*2*np.pi
     
     # Step 3) Once the resulting linar angle vector has been found, we then create a new memory
     # to keep track of the oscilation in its motion and produce a final velocity (non-linear) 
     # This final velocity will be in terms of a first-degree monomial and a sine function
     if agent.behavioral_memory.get("oscilating_angle") == None:
         agent.behavioral_memory["oscilating_angle"] = 0
-    non_linear_angle = linear_angle + np.cos(agent.behavioral_memory["oscilating_angle"])
+    non_linear_angle = linear_angle + np.sin(agent.behavioral_memory["oscilating_angle"])*0.04
     agent.behavioral_memory["oscilating_angle"] += oscilation_time_increment
 
-    agent.behavioral_memory["velocity_x"] = AGENT_VELOCITY*np.cos(non_linear_angle)
-    agent.behavioral_memory["velocity_y"] = AGENT_VELOCITY*np.sin(non_linear_angle)
+    agent.behavioral_memory["velocity_x"] = AGENT_VELOCITY*np.cos(non_linear_angle) 
+    agent.behavioral_memory["velocity_y"] = AGENT_VELOCITY*np.sin(non_linear_angle) 
     # Step 4) After establishing the final velocity, we make our agent move according to the determined velocity vector
-    
+    agent.x_coordinate += agent.behavioral_memory["velocity_x"]*behavior_time_step  
+    agent.y_coordinate += agent.behavioral_memory["velocity_y"]*behavior_time_step 
+
+    # agent.x_coordinate += np.cos(agent.behavioral_memory["oscilating_angle"])*0.05
+    # agent.y_coordinate += np.sin(agent.behavioral_memory["oscilating_angle"])*0.05
 
     agent.behavioral_memory["elapsed_time_in_state"] += 1
     # Inspection after action:
