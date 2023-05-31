@@ -1,7 +1,7 @@
-
 AGENT_VELOCITY = 0.5      # velocity
+
 class Agent:
-    def __init__(self, x_coordinate, y_coordinate, constant_velocity) -> None:
+    def __init__(self, x_coordinate, y_coordinate) -> None:
         self.x_coordinate = x_coordinate
         self.y_coordinate = y_coordinate
         self.state_behavior = behavior.rest

@@ -18,7 +18,7 @@ Nt           = 200      # number of time steps
 N            = 20  # number of agents
 MAX_QUALITY  = 250
 N_SITES      = 5        # number of sites
-S_RADIUS     = 0.2      # site radius
+S_RADIUS     = 0.15      # site radius
 
 agents : List[Agent] = []
 sites  : List[Site]  = []
@@ -50,7 +50,7 @@ def main():
     world.sites = sites
 
     # Step 2: Create list of Agent Objects
-    agents = [Agent(hub.x_coordinate, hub.y_coordinate, AGENT_VELOCITY) for _ in range(N)]
+    agents = [Agent(hub.x_coordinate, hub.y_coordinate) for _ in range(N)]
     # Adding agents to the World object
     world.agents = agents
     
@@ -63,6 +63,7 @@ def main():
         plt.cla()
         	
         ax.add_artist(hub_dot)
+
         for site in sites:
             site_dot = plt.Circle((site.x_coordinate, site.y_coordinate), S_RADIUS, color ='blue',  alpha=0.5)
             ax.add_artist(site_dot)
